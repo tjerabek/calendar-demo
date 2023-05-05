@@ -10,7 +10,7 @@ export type EventRangeWithPositions = {
   offsetX: null | number;
 } & EventRange;
 
-const isOverlapping = (range1: EventRange, range2: EventRange): Boolean => {
+const isOverlapping = (range1: EventRange, range2: EventRange): boolean => {
   if (range1.end <= range2.start || range2.end <= range1.start) {
     return false;
   }
@@ -54,12 +54,12 @@ export const positionEvents = (
 ): EventRangeWithPositions[] => {
   const result = prepareEvents(events);
 
-  result.map((item, index) => {
+  for (let index = 0; index < events.length; index++) {
     if (!result[index].offsetX) {
-      let off = 0;
       const len = result[index].overlappingIndexes.length;
-      result[index].offsetX = off;
       const increment = 100 / (len + 1);
+      let off = 0;
+      result[index].offsetX = off;
       result[index].width = increment;
       off += increment;
       for (let i = 0; i < len; i++) {
@@ -71,6 +71,6 @@ export const positionEvents = (
         off += increment;
       }
     }
-  });
+  }
   return result;
 };

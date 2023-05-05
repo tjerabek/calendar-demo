@@ -4,7 +4,7 @@ import {
   EventRangeWithPositions,
   positionEvents,
 } from "@/lib/calendar-utils";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const SLOTS_COUNT = 24;
 
@@ -42,10 +42,6 @@ const EXAMPLES: EventRange[][] = [
       start: 8,
       end: 11,
     },
-    {
-      start: 9,
-      end: 10,
-    },
   ],
   [
     {
@@ -77,9 +73,8 @@ const EXAMPLES: EventRange[][] = [
 
 export default function Home() {
   const slots = 24;
-  const [eventInput, setEventInput] = useState<EventRangeWithPositions[]>(
-    positionEvents(EXAMPLES[0])
-  );
+  const [eventInput, setEventInput] = useState(EXAMPLES[0]);
+  const positions = useMemo(() => positionEvents(eventInput), [eventInput]);
 
   return (
     <main>
@@ -108,7 +103,7 @@ export default function Home() {
             ))}
           </div>
           <div className="absolute h-full left-10 top-0 right-0">
-            {eventInput?.map((item, i) => (
+            {positions?.map((item, i) => (
               <div
                 key={i}
                 className="absolute z-50 rounded bg-blue-200/50 border-blue-800 border py-1 px-2"
@@ -126,7 +121,7 @@ export default function Home() {
         </div>
       </div>
       <div>
-        {eventInput?.map((item, i) => (
+        {positions?.map((item, i) => (
           <div key={i}>
             {i}: {JSON.stringify(item)}
           </div>
