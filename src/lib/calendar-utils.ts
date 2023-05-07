@@ -8,27 +8,27 @@ export type EventRangeWithPositions = {
   width: number;
   overlappingIndexes: number[];
   offsetX: null | number;
+  movedBy: null | number;
 } & EventRange;
 
-const isOverlapping = (range1: EventRange, range2: EventRange): boolean => {
+export const isOverlapping = (
+  range1: EventRange,
+  range2: EventRange
+): boolean => {
   if (range1.end <= range2.start || range2.end <= range1.start) {
     return false;
   }
   return true;
 };
 
-const compareRanges = (a: EventRange, b: EventRange): number => {
-  return a.start - b.start;
-};
-
-const getOverlappingIndexes = (
+export const getOverlappingIndexes = (
   event: EventRange,
   events: EventRange[],
   eventIndex: number
 ): number[] => {
   const overlappingIndexes = [];
   for (let i = 0; i < events.length; i++) {
-    if (isOverlapping(events[i], event) && i !== eventIndex) {
+    if (isOverlapping(events[i], event)) {
       overlappingIndexes.push(i);
     }
   }
@@ -36,7 +36,7 @@ const getOverlappingIndexes = (
 };
 
 const prepareEvents = (events: EventRange[]): EventRangeWithPositions[] => {
-  return events.sort(compareRanges).map((event, eventIndex) => {
+  return events.map((event, eventIndex) => {
     const overlappingIndexes = getOverlappingIndexes(event, events, eventIndex);
 
     return {
@@ -45,6 +45,7 @@ const prepareEvents = (events: EventRange[]): EventRangeWithPositions[] => {
       width: 0,
       height: event.end - event.start,
       overlappingIndexes,
+      movedBy: null,
     };
   });
 };
@@ -52,23 +53,24 @@ const prepareEvents = (events: EventRange[]): EventRangeWithPositions[] => {
 export const positionEvents = (
   events: EventRange[]
 ): EventRangeWithPositions[] => {
-  const result = prepareEvents(events);
+  let result = prepareEvents(events);
 
   for (let index = 0; index < events.length; index++) {
-    if (!result[index].offsetX) {
-      const len = result[index].overlappingIndexes.length;
-      const increment = 100 / (len + 1);
-      let off = 0;
-      result[index].offsetX = off;
-      result[index].width = increment;
-      off += increment;
-      for (let i = 0; i < len; i++) {
-        const idx = result[index].overlappingIndexes[i];
-        if (!result[idx].offsetX) {
-          result[idx].offsetX = off;
-          result[idx].width = increment;
+    if (!result[index].movedBy) {
+      const over = result[index].overlappingIndexes;
+      const width = 100 / over.length;
+      result[index].offsetX = 0;
+      result[index].width = width;
+      result[index].movedBy = null;
+      let increment = width;
+
+      for (let oindex = 0; oindex < over.length; oindex++) {
+        if (over[oindex] !== index) {
+          result[over[oindex]].movedBy = index;
+          result[over[oindex]].width = width;
+          result[over[oindex]].offsetX = increment;
+          increment += width;
         }
-        off += increment;
       }
     }
   }

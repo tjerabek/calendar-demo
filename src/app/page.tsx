@@ -69,6 +69,48 @@ const EXAMPLES: EventRange[][] = [
       end: 10,
     },
   ],
+  [
+    {
+      start: 1,
+      end: 3,
+    },
+    {
+      start: 3,
+      end: 4,
+    },
+    {
+      start: 1,
+      end: 5,
+    },
+    {
+      start: 1,
+      end: 5,
+    },
+    {
+      start: 8,
+      end: 10,
+    },
+    {
+      start: 8,
+      end: 10,
+    },
+    {
+      start: 8,
+      end: 11,
+    },
+    {
+      start: 9,
+      end: 11,
+    },
+    {
+      start: 7,
+      end: 10,
+    },
+    {
+      start: 9,
+      end: 10,
+    },
+  ],
 ];
 
 export default function Home() {
